@@ -28,10 +28,11 @@ class Quest:
         df_quest_study_protocol_raw = pd.read_csv(self.__url_quest,skiprows=1,skipfooter=20,sep=';', engine='python').iloc[:,:6]
         df_quest_study_protocol_raw = df_quest_study_protocol_raw.set_index('# ORDER')
 
-        f_split_minutes = lambda x: x.astype(str).str.split('.').str[0].astype(int) * 60
-        f_split_seconds = lambda x: x.astype(str).str.split('.').str[1].astype(int)
+        f_split = lambda x: x.astype(str).str.split('.')
+        f_transform_seconds = lambda col: [(int(item[0])*60)+int(item[1]) if len(item)==2 else int(item[0])*60 for item in col]
 
-        df_quest_study_protocol = df_quest_study_protocol_raw.apply(f_split_minutes) + df_quest_study_protocol_raw.apply(f_split_seconds)
+        df_quest_study_protocol = df_quest_study_protocol_raw.apply(f_split)
+        df_quest_study_protocol = df_quest_study_protocol.apply(f_transform_seconds)
         df_quest_study_protocol = df_quest_study_protocol.T
         
         return df_quest_study_protocol
